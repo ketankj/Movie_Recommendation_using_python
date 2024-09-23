@@ -1,0 +1,2 @@
+# Movie_Recomendation_using Python
+ This repository provides a movie recommendation system using a content-based filtering technique. It takes user input for a favorite movie and recommends similar movies based on genres, keywords, cast, director, and other textual features. The system uses the cosine similarity algorithm to calculate and display the top 10 closest matches. Ideal for movie enthusiasts!
