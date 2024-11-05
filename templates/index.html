@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Recommendation System</title>
+    <!-- Link to the external CSS file -->
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+    <div class="overlay">
+        <div class="container">
+            <h1>Movie Recommender</h1>
+            <p>Find your next favorite movie!</p>
+            <form id="movie-form">
+                <div class="input-container">
+                    <input type="text" id="movie-name" placeholder="Enter a movie name" required>
+                    <button type="submit">Get Recommendations</button>
+                </div>
+            </form>
+            <div class="results" id="results"></div>
+        </div>
+    </div>
+
+    <!-- Modal for movie information -->
+    <div id="movie-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="movie-info"></div>
+        </div>
+    </div>
+
+    <script>
+        // Fetch and display recommendations
+        document.getElementById('movie-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const movieName = document.getElementById('movie-name').value;
+
+            fetch('/recommend', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    'movie_name': movieName
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultsDiv = document.getElementById('results');
+                resultsDiv.innerHTML = '';
+                if (data.length > 0) {
+                    data.forEach(movie => {
+                        const movieElement = document.createElement('div');
+                        movieElement.classList.add('movie-title');
+                        movieElement.textContent = movie;
+                        movieElement.addEventListener('click', () => fetchMovieInfo(movie)); // Add click event
+                        resultsDiv.appendChild(movieElement);
+                    });
+                } else {
+                    resultsDiv.textContent = 'No recommendations found.';
+                }
+            });
+        });
+
+        // Fetch and display movie information in a modal
+        function fetchMovieInfo(movieTitle) {
+            fetch('/movie_info', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    'title': movieTitle
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const movieInfoDiv = document.getElementById('movie-info');
+                const modal = document.getElementById('movie-modal');
+                modal.style.display = 'block';  // Show the modal
+
+                movieInfoDiv.innerHTML = '';  // Clear previous info
+
+                if (data.error) {
+                    movieInfoDiv.textContent = 'Movie information not found.';
+                } else {
+                    // Display movie details in modal
+                    const movieDetails = `
+                        <h2>${data.title}</h2>
+                        <p><strong>Genres:</strong> ${data.genres}</p>
+                        <p><strong>Director:</strong> ${data.director}</p>
+                        <p><strong>Cast:</strong> ${data.cast}</p>
+                        <p><strong>Overview:</strong> ${data.overview}</p>
+                        <p><strong>Original Language:</strong> ${data.original_language}</p>
+                    `;
+                    movieInfoDiv.innerHTML = movieDetails;
+                }
+            });
+        }
+
+        // Close the modal when user clicks the "X" button or outside the modal
+        const modal = document.getElementById('movie-modal');
+        const closeBtn = document.querySelector('.close');
+
+        closeBtn.onclick = function() {
+            modal.style.display = 'none';
+        };
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        };
+    </script>
+</body>
+</html>
