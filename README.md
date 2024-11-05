@@ -115,6 +115,6 @@ To get a local copy of this project up and running, follow these steps.
 
 ## Acknowledgments
 
-- Special thanks to online movie databases (such as TMDb or OMDb) for providing API access to movie information.
-- This project was developed as part of a course or self-study project to enhance frontend and backend integration skills.
+- Special thanks to online movie databases for providing API access to movie information.
+- This project was developed as part of a self-study project to enhance frontend and backend integration skills.
 
